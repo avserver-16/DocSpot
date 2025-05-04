@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}DOC Sharer{% endblock %}
+
+{% block content %}
+<h1>DOC Sharer</h1>
+<p>Welcome to DOC Sharer!</p>
+
+<p>{% if form.instance.pk %}Edit Tweet{% else %}Create Tweet{% endif %}</p>
+
+<form method="POST" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-warning">Submit</button>
+</form>
+
+<a href="{% url 'tweet_list' %}" class="btn btn-primary mb-3">Back to tweet list</a>
+{% endblock %}

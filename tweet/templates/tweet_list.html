@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}DOC Sharer{% endblock %}
+
+{% block content %}
+<h1>DOC Sharer</h1>
+<p>Welcome to DOC Sharer!</p>
+<a href="{% url 'tweet_create' %}" class="btn btn-outline-success mb-3">Create Tweet</a>
+
+<div class="container mt-2">
+    <div class="row">
+        {% for tweet in tweets %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="background-color: #1a1a1a; box-shadow: 0 4px 8px rgba(0, 255, 255, 0.2); transition: all 0.3s ease;">
+                <div class="image-container">
+                    <img class="card-img-top" src="{{ tweet.photo.url }}" alt="Tweet image">
+                </div>
+                <div class="card-body" style="color: #f0f0f0;">
+                    <h5 class="card-title" style="text-shadow: 0 0 10px #00ffc8;">{{ tweet.user.username }}</h5>
+                    <p class="card-text" style="color: #cccccc;">{{ tweet.text }}</p>  <!-- This line shows the tweet content -->
+                    {% if tweet.user == user %}
+                    <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-warning btn-sm" style="box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);">Edit</a>
+                    <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm" style="box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+}
+
+.image-container img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.card {
+    border-radius: 16px;
+    background-color: #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 255, 255, 0.4);
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.btn-sm {
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-sm:hover {
+    transform: scale(1.05);
+}
+</style>
+
+{% endblock %}

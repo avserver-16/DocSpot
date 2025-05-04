@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}DOC Sharer{% endblock %}
+
+{% block content %}
+<h1>DOC Sharer</h1>
+<p>Are you sure you want to delete the tweet</p>
+
+
+<form method="POST" class="form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-warning">Delete</button>
+</form>
+
+<a href="{% url 'tweet_list' %}" class="btn btn-primary mb-3">Cancel</a>
+{% endblock %}
