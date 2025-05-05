@@ -3,10 +3,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+
 urlpatterns = [
-    path("", views.tweet_list,name='tweet_list'),
-     path("create/", views.tweet_create,name='tweet_create'),
-     path("<int:tweet_id>/edit/", views.tweet_edit,name='tweet_edit'),
-       path("<int:tweet_id>/delete/", views.tweet_delete,name='tweet_delete'),
-        path("register/", views.register,name='register'),
+    path("", views.TweetListView.as_view(), name='tweet_list'),
+    path("create/", views.TweetCreateView.as_view(), name='tweet_create'),
+    path("<int:pk>/edit/", views.TweetUpdateView.as_view(), name='tweet_update'),
+    path("<int:pk>/delete/", views.TweetDeleteView.as_view(), name='tweet_delete'),
+    path("register/", views.register, name='register'),
+    path("api/search/", views.search_documents, name='search_documents'),
 ]

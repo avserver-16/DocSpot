@@ -1,84 +1,123 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 
-{% block title %}DOC Sharer{% endblock %}
+{% block title %}
+  DocSpot - Document Management
+{% endblock %}
 
 {% block content %}
-<h1>DOC Sharer</h1>
-<p>Welcome to DOC Sharer!</p>
-<a href="{% url 'tweet_create' %}" class="btn btn-outline-success mb-3">Create Tweet</a>
-
-<div class="container mt-2">
-    <div class="row">
-        {% for tweet in tweets %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100" style="background-color: #1a1a1a; box-shadow: 0 4px 8px rgba(0, 255, 255, 0.2); transition: all 0.3s ease;">
-                <div class="image-container">
-                    <img class="card-img-top" src="{{ tweet.photo.url }}" alt="Tweet image">
-                </div>
-                <div class="card-body" style="color: #f0f0f0;">
-                    <h5 class="card-title" style="text-shadow: 0 0 10px #00ffc8;">{{ tweet.user.username }}</h5>
-                    <p class="card-text" style="color: #cccccc;">{{ tweet.text }}</p>  <!-- This line shows the tweet content -->
-                    {% if tweet.user == user %}
-                    <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-warning btn-sm" style="box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);">Edit</a>
-                    <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm" style="box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);">Delete</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+  <!-- Welcome Section -->
+  <div class="welcome-section mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="mb-2">Welcome to DocSpot</h1>
+        <p class="text-muted mb-0">Your personal document management platform. Access, share, and collaborate on documents seamlessly.</p>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'tweet_create' %}" class="upload-btn">
+          <i class="bi bi-plus-lg"></i>
+          Upload Document
+        </a>
+      </div>
     </div>
-</div>
+  </div>
 
-<style>
-.image-container {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
-}
+  <div class="row">
+    <!-- Documents List -->
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0">Recent Documents</h2>
+      </div>
 
-.image-container img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-}
+      {% for tweet in tweets %}
+        <div class="document-card">
+          <div class="row align-items-center">
+            <!-- Document Icon -->
+            <div class="col-auto">
+              <div class="rounded p-3 {% if tweet.category == 'operating_systems' %}bg-warning{% elif tweet.category == 'programming' %}bg-primary{% elif tweet.category == 'data_science' %}bg-success{% elif tweet.category == 'web_development' %}bg-info{% else %}bg-secondary{% endif %}">
+                <i class="bi {% if 'pdf' in tweet.file.url %}bi-file-pdf{% elif 'doc' in tweet.file.url %}bi-file-word{% else %}bi-file-text{% endif %} fs-3 text-white"></i>
+              </div>
+            </div>
 
-.card {
-    border-radius: 16px;
-    background-color: #1a1a1a;
-    transition: all 0.3s ease;
-}
+            <!-- Document Details -->
+            <div class="col">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h3 class="h5 mb-2">{{ tweet.name }}</h3>
+                  <span class="badge {% if tweet.category == 'operating_systems' %}bg-warning{% elif tweet.category == 'programming' %}bg-primary{% elif tweet.category == 'data_science' %}bg-success{% elif tweet.category == 'web_development' %}bg-info{% else %}bg-secondary{% endif %}">
+                    {{ tweet.get_category_display_name }}
+                  </span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <span class="text-white small">{{ tweet.user.username|slice:':2'|upper }}</span>
+                  </div>
+                  <span class="ms-2 text-muted small">{{ tweet.user.username }}</span>
+                </div>
+              </div>
 
-.card:hover {
-    box-shadow: 0 8px 16px rgba(0, 255, 255, 0.4);
-    transform: scale(1.05);
-}
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small">
+                  <i class="bi bi-calendar me-1"></i> {{ tweet.created_at|date:'M d, Y' }}
+                </div>
+                <div class="btn-group">
+                  <a href="{{ tweet.file.url }}" class="btn btn-sm btn-success" download>
+                    <i class="bi bi-download"></i> Download
+                  </a>
+                  {% if user == tweet.user %}
+                    <a href="{% url 'tweet_update' tweet.id %}" class="btn btn-sm btn-primary">
+                      <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-sm btn-danger">
+                      <i class="bi bi-trash"></i> Delete
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="document-card text-center py-5">
+          <i class="bi bi-folder2-open display-4 text-muted mb-3"></i>
+          <h3 class="h5">No Documents Found</h3>
+          <p class="text-muted">Upload your first document to get started.</p>
+          <a href="{% url 'tweet_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Upload Document</a>
+        </div>
+      {% endfor %}
+    </div>
 
-.card-body {
-    padding: 1.25rem;
-}
+    <!-- Category Distribution -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h4 mb-4">Category Distribution</h2>
+          {% for stat in category_stats %}
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span>{{ stat.category }}</span>
+                <span>{{ stat.percentage }}%</span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar {% if stat.category == 'Operating Systems' %}bg-warning{% elif stat.category == 'Programming' %}bg-primary{% elif stat.category == 'Data Science' %}bg-success{% elif stat.category == 'Web Development' %}bg-info{% else %}bg-secondary{% endif %}"
+                  role="progressbar"
+                  style="width: {{ stat.percentage }}%"
+                  aria-valuenow="{{ stat.percentage }}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"></div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
 
-.card-title {
-    font-size: 1.2rem;
-    color: #fff;
-}
-
-.card-text {
-    font-size: 1rem;
-    color: #ccc;
-}
-
-.btn-sm {
-    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-    transition: all 0.3s ease;
-}
-
-.btn-sm:hover {
-    transform: scale(1.05);
-}
-</style>
-
+      <!-- GitHub CTA -->
+      <div class="card mt-4">
+        <div class="card-body text-center">
+          <h3 class="h5">Looking for code?</h3>
+          <p class="mb-3">Find this project on GitHub and contribute to its development.</p>
+          <a href="https://github.com/docspot/document-manager" class="btn btn-primary"><i class="bi bi-github"></i> View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -1,18 +1,72 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 
-{% block title %}DOC Sharer{% endblock %}
+{% block title %}
+  DOC Sharer
+{% endblock %}
 
 {% block content %}
-<h1>DOC Sharer</h1>
-<p>Welcome to DOC Sharer!</p>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card document-card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">
+              {% if form.instance.pk %}
+                Edit
+              {% else %}
+                Upload New
+              {% endif %}Document
+            </h2>
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Document Title</label>
+                {{ form.name }}
+              </div>
+              <div class="mb-3">
+                <label for="{{ form.file.id_for_label }}" class="form-label">File</label>
+                {{ form.file }}
+              </div>
+              <div class="mb-3">
+                <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                {{ form.category }}
+              </div>
+              <div class="mb-3" id="custom-category-field" style="display: none;">
+                <label for="{{ form.custom_category.id_for_label }}" class="form-label">Custom Category</label>
+                {{ form.custom_category }}
+              </div>
+              <div class="d-flex justify-content-between">
+                <a href="{% url 'tweet_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  {% if form.instance.pk %}
+                    Save Changes
+                  {% else %}
+                    Upload Document
+                  {% endif %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<p>{% if form.instance.pk %}Edit Tweet{% else %}Create Tweet{% endif %}</p>
-
-<form method="POST" class="form" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-warning">Submit</button>
-</form>
-
-<a href="{% url 'tweet_list' %}" class="btn btn-primary mb-3">Back to tweet list</a>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const categorySelect = document.getElementById('{{ form.category.id_for_label }}')
+      const customCategoryField = document.getElementById('custom-category-field')
+    
+      function toggleCustomCategory() {
+        if (categorySelect.value === 'other') {
+          customCategoryField.style.display = 'block'
+        } else {
+          customCategoryField.style.display = 'none'
+        }
+      }
+    
+      categorySelect.addEventListener('change', toggleCustomCategory)
+      toggleCustomCategory() // Run on page load for edit form
+    })
+  </script>
 {% endblock %}
